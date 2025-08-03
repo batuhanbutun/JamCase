@@ -17,11 +17,6 @@ public class GridManager3D : MonoBehaviour
     private GameObject[,] gridObjects;
     private HashSet<Vector2Int> lockedGrids = new();
 
-    private void Start()
-    {
-        //GenerateGrid();
-    }
-
     public void GenerateGrid(int width1, int height1, List<Vector2Int> locked = null)
     {
         width = width1;
@@ -118,19 +113,11 @@ public class GridManager3D : MonoBehaviour
         Vector2Int last = path[^1];
         //gridObjects[last.x, last.y] = obj;
 
-        float duration = path.Count * 0.2f; // toplam süre
-
         // Hareket başlasın
-        yield return StartCoroutine(obj.GetComponent<PassengerMovementController>().FollowPath(worldPath, duration, () =>
+        yield return StartCoroutine(obj.GetComponent<IMovable>().FollowPath(worldPath, () =>
         {
             PassengerRouter(obj.GetComponent<Passenger>()); 
         }));
-        /*obj.GetComponent<Passenger>().SetAnimator("running");
-        yield return obj.transform.DOPath(worldPath, duration, PathType.Linear)
-            .SetEase(Ease.InOutSine)
-            .SetLookAt(0.01f)
-            .WaitForCompletion();
-        PassengerRouter(obj.GetComponent<Passenger>());*/
     }
     
     private void PassengerRouter(Passenger passenger)
@@ -153,18 +140,13 @@ public class GridManager3D : MonoBehaviour
         var click = passenger.gameObject.AddComponent<BlockClick3D>();
         click.Init(gridPosition.x, gridPosition.y, this);
 
-        Debug.Log(gridPosition.x + ", " + gridPosition.y);
+        
         gridObjects[gridPosition.x, gridPosition.y] = passenger.gameObject;
         passenger.ColorSetup(passengerColor);
     }
 
     public Vector3 GetWorldPos(int x, int z)
     {
-       /* float bottomZ = 5 - (height - 1) * cellSize;
-        float worldZ = bottomZ + z * cellSize;
-
-        return new Vector3(x * cellSize, 0f, worldZ);*/
-       
        float step = gridSpacing;
 
        float totalHeight = (height - 1) * step;
@@ -177,7 +159,7 @@ public class GridManager3D : MonoBehaviour
        
     }
     
-    public bool IsValidGridPos(Vector2Int pos)
+    private bool IsValidGridPos(Vector2Int pos)
     {
         if (pos.x < 0 || pos.x >= width || pos.y < 0 || pos.y >= height)
             return false;

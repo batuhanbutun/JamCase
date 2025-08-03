@@ -19,9 +19,9 @@ public class Passenger : MonoBehaviour,IColorable
         passengerColor = color;
     }
 
-    public void SetAnimator(string trigger)
+    public void SetAnimator(string stateName,bool isOn)
     {
-        passengerAnimator.SetTrigger(trigger);
+        passengerAnimator.SetBool(stateName, isOn);
     }
     
 }

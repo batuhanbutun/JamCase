@@ -9,6 +9,8 @@ public class WaitingAreaManager : Singleton<WaitingAreaManager>, IPassengerRecei
     [SerializeField] private List<Transform> waitingAreaGrids;
     private Passenger[] waitingPassengers;
     private int areaCapacity = 0;
+    
+    private Coroutine passengerMoveCoroutine;
     private void Awake()
     {
         areaCapacity = waitingAreaGrids.Count;
@@ -27,11 +29,7 @@ public class WaitingAreaManager : Singleton<WaitingAreaManager>, IPassengerRecei
             if (waitingPassengers[i] == null)
             {
                 waitingPassengers[i] = passenger;
-                passenger.transform.DOMove(waitingAreaGrids[i].transform.position,0.3f).SetEase(Ease.InOutSine).OnComplete(
-                    () =>
-                    {
-                        passenger.SetAnimator("idle");
-                    });
+                passengerMoveCoroutine = StartCoroutine(passenger.GetComponent<IMovable>().MoveTo(waitingAreaGrids[i].position));
                 return true;
             }
         }
@@ -41,7 +39,7 @@ public class WaitingAreaManager : Singleton<WaitingAreaManager>, IPassengerRecei
         return false;
     }
     
-    public void TryGivePassengersToBus(Bus bus)
+    private void TryGivePassengersToBus(Bus bus)
     {
         for (int i = 0; i < waitingPassengers.Length; i++)
         {
@@ -52,7 +50,10 @@ public class WaitingAreaManager : Singleton<WaitingAreaManager>, IPassengerRecei
                 Passenger p = waitingPassengers[i];
                 waitingPassengers[i] = null;
 
-                BusManager.Instance.TryReceive(p);
+                bool isBusAvailable = BusManager.Instance.TryReceive(p);
+                if (isBusAvailable)
+                    StopCoroutine(passengerMoveCoroutine);
+                
             }
         }
     }

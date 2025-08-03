@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using _Scripts;
 using DG.Tweening;
 using UnityEngine;
 
-public class Bus : MonoBehaviour,IColorable
+public class Bus : MonoBehaviour,IColorable,IMovable
 {
     [SerializeField] private ObjColor busColor;
     [SerializeField] private Renderer visualRenderer;
@@ -26,20 +27,25 @@ public class Bus : MonoBehaviour,IColorable
     public void SetSeatForPassenger(Passenger passenger)
     {
         reservedSeats++;
-        passenger.transform.DOMove(transform.position,1f).SetEase(Ease.InOutSine).OnComplete(() =>
+        StartCoroutine(passenger.GetComponent<IMovable>().MoveTo(transform.position, () =>
         {
             passengers.Add(passenger);
             PassengerOnBus?.Invoke();
             Destroy(passenger.gameObject);
-        });
+        }));
         //Otobüs koltuğuna oturt
     }
 
-    public void PlayDeparture(System.Action onComplete)
+    public IEnumerator MoveTo(Vector3 targetPos, Action onComplete = null)
     {
-        transform.DOMove(transform.position + Vector3.right * 10f, 1f)
+        yield return transform.DOMove(targetPos, 1f)
             .SetEase(Ease.InOutSine)
             .OnComplete(() => onComplete?.Invoke());
     }
 
+    public IEnumerator FollowPath(Vector3[] worldPath, Action onComplete = null)
+    {
+        //Şu an ihtiyaç yok. Ama ilerde oyuna otobüs pathleri eklersek kullanılabilir. 20-30 level oynadım ama öyle bir şey yok sanırım :)
+        yield break;
+    }
 }

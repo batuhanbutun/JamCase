@@ -44,9 +44,10 @@ public class BusManager : Singleton<BusManager>,IPassengerReceiver
 
     public bool TryReceive(Passenger passenger)
     {
+        if (currentBus == null) return false;
         if (passenger.ObjColor != currentBus.ObjColor) return false;
-        if (currentBus == null || currentBus.IsBusReserved)
-            return false;
+        if (currentBus.IsBusReserved) return false;
+            
 
         currentBus.SetSeatForPassenger(passenger);
         return true;
@@ -54,23 +55,22 @@ public class BusManager : Singleton<BusManager>,IPassengerReceiver
     
     IEnumerator HandleBusDeparture()
     {
-        currentBus.PlayDeparture(() => Destroy(currentBus.gameObject));
-
-        yield return new WaitForSeconds(1f);
+        var toMovingBus = currentBus;
+        yield return toMovingBus.MoveTo(currentBus.transform.position + Vector3.right * 10f,() => Destroy(toMovingBus.gameObject));
+        
         currentBus = null;
-
-        // Back öne gelsin
+        
         if (backBus != null)
         {
-            currentBus = backBus;
-            backBus = null;
+            yield return backBus.MoveTo(frontSlot.position, () =>
+            {
+                currentBus = backBus;
+                backBus = null;
+                if (currentIndex < busColorSequence.Count)
+                    backBus = SpawnBus(busColorSequence[currentIndex++], backSlot.position);
             
-            yield return currentBus.transform.DOMove(frontSlot.position, 1f).SetEase(Ease.InOutSine).WaitForCompletion();
-            
-            if (currentIndex < busColorSequence.Count)
-                backBus = SpawnBus(busColorSequence[currentIndex++], backSlot.position);
-            
-            BusReadyToDepart?.Invoke(currentBus);
+                BusReadyToDepart?.Invoke(currentBus);
+            });
         }
     }
 
