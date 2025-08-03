@@ -310,11 +310,11 @@ MonoBehaviour:
   gridPrefab: {fileID: 7917549305869352942, guid: 6413e4a056f304148a6b7d24f6d4ae38,
     type: 3}
   gridParent: {fileID: 878047027}
-  selectedColor: 0
+  selectedColor: 2
   passengerVisualPrefab: {fileID: 8855790336608403936, guid: b9038409dc9184746b1e153d56d58762,
     type: 3}
-  busColorSequence: 
-  saveTarget: {fileID: 0}
+  busColorSequence: 000000000000000000000000
+  saveTarget: {fileID: 11400000, guid: ecbe47cf48ecc5841bdbfa584ed04614, type: 2}
 --- !u!4 &1805112716
 Transform:
   m_ObjectHideFlags: 0
@@ -417,7 +417,7 @@ Transform:
   m_GameObject: {fileID: 1963329989}
   serializedVersion: 2
   m_LocalRotation: {x: 0.3898358, y: -0, z: -0, w: 0.92088443}
-  m_LocalPosition: {x: 1, y: 4.1, z: -1.52}
+  m_LocalPosition: {x: 0.01, y: 5.96, z: -0.16}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -12,7 +12,9 @@ public class LevelEditorTool : MonoBehaviour
     [SerializeField] private float gridSpacing = 1f;
     [SerializeField] private GameObject gridPrefab;
     [SerializeField] private Transform gridParent;
-
+    [SerializeField] private Material lockedMaterial;
+    private HashSet<Vector2Int> lockedGrids = new();
+    
     [Header("Passenger Settings")]
     [SerializeField] private ObjColor selectedColor;
     [SerializeField] private GameObject passengerVisualPrefab;
@@ -23,13 +25,13 @@ public class LevelEditorTool : MonoBehaviour
     [Header("Save Target")]
     [SerializeField] private LevelData saveTarget;
 
-    private Dictionary<Vector2Int, GameObject> spawnedPassengers = new();
+    private Dictionary<Vector2Int, (GameObject obj, ObjColor color)> spawnedPassengers = new();
     private GameObject[,] gridVisuals;
     
     
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2) )
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
@@ -37,16 +39,21 @@ public class LevelEditorTool : MonoBehaviour
                 var gridObj = hit.collider.GetComponent<Transform>();
                 if (gridObj == null) return;
 
-                Vector2Int gridPos = new(
+                /*Vector2Int gridPos = new(
                     Mathf.RoundToInt(gridObj.position.x / gridSpacing),
                     Mathf.RoundToInt(gridObj.position.z / gridSpacing)
-                );
+                );*/
+                
+                Vector2Int gridPos = WorldToGridIndex(hit.point);
 
                 if (Input.GetMouseButtonDown(0))
                     PlacePassenger(gridPos);
                 else if (Input.GetMouseButtonDown(1))
                     RemovePassenger(gridPos);
+                else if (Input.GetMouseButtonDown(2))
+                    ToggleLockGrid(gridPos);
             }
+            
         }
     }
     
@@ -56,16 +63,27 @@ public class LevelEditorTool : MonoBehaviour
 
         gridVisuals = new GameObject[gridWidth, gridHeight];
 
+        float totalWidth = (gridWidth - 1) * gridSpacing;
+        float totalHeight = (gridHeight - 1) * gridSpacing;
+
+        float offsetX = -totalWidth / 2f;
+        float offsetZ = 5f - totalHeight; // z = 5 sabit üst hizaya göre
+
         for (int x = 0; x < gridWidth; x++)
         {
             for (int y = 0; y < gridHeight; y++)
             {
-                Vector3 pos = new Vector3(x * gridSpacing, 0, y * gridSpacing);
+                Vector3 pos = new Vector3(
+                    x * gridSpacing + offsetX,
+                    0,
+                    y * gridSpacing + offsetZ
+                );
+
                 var obj = Instantiate(gridPrefab, pos, Quaternion.identity, gridParent);
-                
+
                 if (obj.GetComponent<Collider>() == null)
-                        obj.AddComponent<BoxCollider>();
-                
+                    obj.AddComponent<BoxCollider>();
+
                 gridVisuals[x, y] = obj;
             }
         }
@@ -84,41 +102,64 @@ public class LevelEditorTool : MonoBehaviour
         
         foreach (var i in spawnedPassengers)
         {
-            if (i.Value != null)
-                DestroyImmediate(i.Value);
+            if (i.Value.obj != null)
+                DestroyImmediate(i.Value.obj);
         }
 
         spawnedPassengers.Clear();
 
         Debug.Log("Grid ve üstündekiler temizlendi");
     }
+    
+    private void ToggleLockGrid(Vector2Int gridPos)
+    {
+        if (!lockedGrids.Add(gridPos))
+        {
+            lockedGrids.Remove(gridPos);
+            gridVisuals[gridPos.x, gridPos.y].GetComponent<Renderer>().material.color = Color.white;
+        }
+        else
+        {
+            gridVisuals[gridPos.x, gridPos.y].GetComponent<Renderer>().material.color = Color.black;
+        }
+    }
 
     public void PlacePassenger(Vector2Int gridPos)
     {
         if (spawnedPassengers.ContainsKey(gridPos))
         {
-            DestroyImmediate(spawnedPassengers[gridPos]);
+            DestroyImmediate(spawnedPassengers[gridPos].obj);
             spawnedPassengers.Remove(gridPos);
         }
         
-        Vector3 pos = new Vector3(gridPos.x * gridSpacing, 0.2f, gridPos.y * gridSpacing);
+        float totalWidth = (gridWidth - 1) * gridSpacing;
+        float totalHeight = (gridHeight - 1) * gridSpacing;
+
+        float offsetX = -totalWidth / 2f;
+        float offsetZ = 5f - totalHeight;
+
+        Vector3 pos = new Vector3(
+            gridPos.x * gridSpacing + offsetX,
+            0f,
+            gridPos.y * gridSpacing + offsetZ
+        );
 
         var vis = Instantiate(passengerVisualPrefab, pos, Quaternion.identity);
         vis.name = $"Passenger_{gridPos.x}_{gridPos.y}";
 
-        var renderer = vis.GetComponent<Renderer>();
+        var renderer = vis.GetComponent<Passenger>().passengerRenderer;
         if (renderer != null)
             renderer.material.color = ColorUtils.FromObjColor(selectedColor);
 
-        spawnedPassengers[gridPos] = vis;
+        spawnedPassengers[gridPos] = (vis, selectedColor);
     }
     
     public void RemovePassenger(Vector2Int gridPos)
     {
         if (spawnedPassengers.TryGetValue(gridPos, out var passenger))
         {
-            if (passenger != null)
-                DestroyImmediate(passenger);
+            if (passenger.obj != null)
+                DestroyImmediate(passenger.obj);
 
             spawnedPassengers.Remove(gridPos);
         }
@@ -152,13 +193,14 @@ public class LevelEditorTool : MonoBehaviour
         saveTarget.gridHeight = gridHeight;
         saveTarget.passengerList.Clear();
         saveTarget.busColorSequence = new(busColorSequence);
-
+        saveTarget.lockedGridPositions = new List<Vector2Int>(lockedGrids);
+        
         foreach (var kvp in spawnedPassengers)
         {
             saveTarget.passengerList.Add(new PassengerData
             {
                 gridPosition = kvp.Key,
-                color = selectedColor
+                color = kvp.Value.color 
             });
         }
 
@@ -176,12 +218,32 @@ public class LevelEditorTool : MonoBehaviour
         gridHeight = saveTarget.gridHeight;
         busColorSequence = new(saveTarget.busColorSequence);
         GenerateGrid();
+        lockedGrids = new HashSet<Vector2Int>(saveTarget.lockedGridPositions);
+
+        foreach (var locked in lockedGrids)
+        {
+            gridVisuals[locked.x, locked.y].GetComponent<Renderer>().material = lockedMaterial;
+        }
         foreach (var data in saveTarget.passengerList)
         {
             selectedColor = data.color;
             PlacePassenger(data.gridPosition);
         }
         Debug.Log("Level Yüklendi");
+    }
+
+    private Vector2Int WorldToGridIndex(Vector3 worldPos)
+    {
+        float totalWidth = (gridWidth - 1) * gridSpacing;
+        float totalHeight = (gridHeight - 1) * gridSpacing;
+
+        float offsetX = -totalWidth / 2f;
+        float offsetZ = 5f - totalHeight;
+
+        int x = Mathf.RoundToInt((worldPos.x - offsetX) / gridSpacing);
+        int y = Mathf.RoundToInt((worldPos.z - offsetZ) / gridSpacing);
+
+        return new Vector2Int(x, y);
     }
     
 }

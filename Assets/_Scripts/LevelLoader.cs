@@ -22,23 +22,14 @@ public class LevelLoader : MonoBehaviour
             return;
         }
 
-        gridManager.GenerateGrid(levelData.gridWidth, levelData.gridHeight);
+        gridManager.GenerateGrid(levelData.gridWidth, levelData.gridHeight,levelData.lockedGridPositions);
 
         foreach (var data in levelData.passengerList)
         {
-            SpawnPassenger(data.gridPosition, data.color);
+            gridManager.SpawnPassenger(data.gridPosition, data.color);
         }
 
-        //BusManager.Instance.SetupBuses(levelData.busColorSequence);
-    }
-
-    private void SpawnPassenger(Vector2Int gridPos, ObjColor color)
-    {
-        Vector3 worldPos = gridManager.GetWorldPos(gridPos.x, gridPos.y);
-
-        var passenger = Instantiate(passengerPrefab, worldPos, Quaternion.identity);
-        passenger.ColorSetup(color);
-
-        //gridManager.RegisterPassenger(gridPos, passenger);
+        BusManager.Instance.SpawnInitialBuses(levelData.busColorSequence);
+        WaitingAreaManager.Instance.ResetArea();
     }
 }

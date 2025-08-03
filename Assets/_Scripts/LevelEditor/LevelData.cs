@@ -10,6 +10,7 @@ public class LevelData : ScriptableObject
 
     public List<PassengerData> passengerList = new();
     public List<ObjColor> busColorSequence = new();
+    public List<Vector2Int> lockedGridPositions = new();
 }
 
 [System.Serializable]

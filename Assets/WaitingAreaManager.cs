@@ -15,6 +15,11 @@ public class WaitingAreaManager : Singleton<WaitingAreaManager>, IPassengerRecei
         waitingPassengers = new Passenger[areaCapacity];
     }
 
+    private void Start()
+    {
+        BusManager.Instance.BusReadyToDepart += TryGivePassengersToBus;
+    }
+
     public bool TryReceive(Passenger passenger)
     {
         for (int i = 0; i < areaCapacity; i++)
@@ -22,7 +27,11 @@ public class WaitingAreaManager : Singleton<WaitingAreaManager>, IPassengerRecei
             if (waitingPassengers[i] == null)
             {
                 waitingPassengers[i] = passenger;
-                passenger.transform.DOMove(waitingAreaGrids[i].transform.position,0.3f).SetEase(Ease.InOutSine);
+                passenger.transform.DOMove(waitingAreaGrids[i].transform.position,0.3f).SetEase(Ease.InOutSine).OnComplete(
+                    () =>
+                    {
+                        passenger.SetAnimator("idle");
+                    });
                 return true;
             }
         }
@@ -36,8 +45,7 @@ public class WaitingAreaManager : Singleton<WaitingAreaManager>, IPassengerRecei
     {
         for (int i = 0; i < waitingPassengers.Length; i++)
         {
-            if (waitingPassengers[i] != null &&
-                waitingPassengers[i].ObjColor == bus.ObjColor)
+            if (waitingPassengers[i] != null && waitingPassengers[i].ObjColor == bus.ObjColor)
             {
                 if (bus.IsBusFull) break;
 
@@ -48,4 +56,17 @@ public class WaitingAreaManager : Singleton<WaitingAreaManager>, IPassengerRecei
             }
         }
     }
+    
+    public void ResetArea()
+    {
+        for (int i = 0; i < waitingPassengers.Length; i++)
+        {
+            if (waitingPassengers[i] != null)
+            {
+                Destroy(waitingPassengers[i].gameObject);
+                waitingPassengers[i] = null;
+            }
+        }
+    }
+    
 }

@@ -2,11 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using _Scripts;
+using DG.Tweening;
 using UnityEngine;
 
 public class BusManager : Singleton<BusManager>,IPassengerReceiver
 {
-    
     [SerializeField] private Bus busPrefab;
     [SerializeField] private Transform frontSlot;
     [SerializeField] private Transform backSlot;
@@ -15,7 +15,14 @@ public class BusManager : Singleton<BusManager>,IPassengerReceiver
     private int currentIndex = 0;
     private Bus currentBus;
     private Bus backBus;
-    
+
+    public System.Action<Bus> BusReadyToDepart;
+    private void Awake()
+    {
+        Bus.PassengerOnBus = null;
+        BusReadyToDepart = null;
+        Bus.PassengerOnBus += IsCurrentBusFull;
+    }
     
     public void SpawnInitialBuses(List<ObjColor> colorSequence)
     {
@@ -38,25 +45,16 @@ public class BusManager : Singleton<BusManager>,IPassengerReceiver
     public bool TryReceive(Passenger passenger)
     {
         if (passenger.ObjColor != currentBus.ObjColor) return false;
-        if (currentBus == null || currentBus.IsBusFull)
+        if (currentBus == null || currentBus.IsBusReserved)
             return false;
 
         currentBus.SetSeatForPassenger(passenger);
-        if (currentBus.IsBusFull)
-            StartCoroutine(HandleBusDeparture());
-        
-        
         return true;
     }
     
     IEnumerator HandleBusDeparture()
     {
-        yield return new WaitForSeconds(0.5f);
-
-        currentBus.PlayDeparture(() =>
-        {
-            Destroy(currentBus.gameObject);
-        });
+        currentBus.PlayDeparture(() => Destroy(currentBus.gameObject));
 
         yield return new WaitForSeconds(1f);
         currentBus = null;
@@ -66,15 +64,20 @@ public class BusManager : Singleton<BusManager>,IPassengerReceiver
         {
             currentBus = backBus;
             backBus = null;
-            currentBus.MoveTo(frontSlot.position);
-
-            yield return new WaitForSeconds(1f);
-
+            
+            yield return currentBus.transform.DOMove(frontSlot.position, 1f).SetEase(Ease.InOutSine).WaitForCompletion();
+            
             if (currentIndex < busColorSequence.Count)
                 backBus = SpawnBus(busColorSequence[currentIndex++], backSlot.position);
             
-            WaitingAreaManager.Instance.TryGivePassengersToBus(currentBus);
+            BusReadyToDepart?.Invoke(currentBus);
         }
+    }
+
+    private void IsCurrentBusFull()
+    {
+        if (currentBus.IsBusFull)
+            StartCoroutine(HandleBusDeparture());
     }
     
 }

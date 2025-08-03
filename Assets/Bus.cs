@@ -7,28 +7,32 @@ using UnityEngine;
 public class Bus : MonoBehaviour,IColorable
 {
     [SerializeField] private ObjColor busColor;
-    public int busCapacity = 3;
+    [SerializeField] private Renderer visualRenderer;
+    private int busCapacity = 3;
+    private int reservedSeats = 0;
     private List<Passenger> passengers = new();
     
     public bool IsBusFull => passengers.Count >= busCapacity;
+    public bool IsBusReserved => reservedSeats >= busCapacity;
     public ObjColor ObjColor => busColor;
 
+    public static System.Action PassengerOnBus;
     public void ColorSetup(ObjColor color)
     {
         busColor = color;
-        GetComponent<Renderer>().material.color = ColorUtils.FromObjColor(color);
+        visualRenderer.material.color = ColorUtils.FromObjColor(color);
     }
     
     public void SetSeatForPassenger(Passenger passenger)
     {
-        passengers.Add(passenger);
-        passenger.transform.DOMove(transform.position,0.2f).SetEase(Ease.InOutSine);
+        reservedSeats++;
+        passenger.transform.DOMove(transform.position,1f).SetEase(Ease.InOutSine).OnComplete(() =>
+        {
+            passengers.Add(passenger);
+            PassengerOnBus?.Invoke();
+            Destroy(passenger.gameObject);
+        });
         //Otobüs koltuğuna oturt
-    }
-    
-    public void MoveTo(Vector3 targetPos)
-    {
-        transform.DOMove(targetPos, 1f).SetEase(Ease.InOutSine);
     }
 
     public void PlayDeparture(System.Action onComplete)
