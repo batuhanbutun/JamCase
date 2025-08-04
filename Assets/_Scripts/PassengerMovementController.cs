@@ -43,6 +43,22 @@ public class PassengerMovementController : MonoBehaviour,IMovable
         onComplete?.Invoke();
     }
     
+    public void MoveAlongGridPath(List<Vector2Int> gridPath, GridManager3D gridManager, System.Action onComplete = null)
+    {
+        Vector3[] worldPath = new Vector3[gridPath.Count];
+        for (int i = 0; i < gridPath.Count; i++)
+        {
+            Vector3 pos = gridManager.GetWorldPos(gridPath[i].x, gridPath[i].y);
+            worldPath[i] = pos;
+        }
+        
+        StartCoroutine(FollowPath(worldPath, () =>
+        {
+            onComplete?.Invoke(); 
+        }));
+        
+    }
+    
     private void LookAtSmooth(Vector3 targetPos)
     {
         Vector3 direction = (targetPos - transform.position).normalized;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class GridMovementPathfinder
 {
-    public static List<Vector2Int> GetPathToTop(Vector2Int start, GameObject[,] gridObjects, int width, int height, HashSet<Vector2Int> lockedGrids)
+    public static List<Vector2Int> GetPathToTop(Vector2Int start, Passenger[,] gridPassengers, int width, int height, HashSet<Vector2Int> lockedGrids)
     {
         Queue<Vector2Int> queue = new Queue<Vector2Int>();
         Dictionary<Vector2Int, Vector2Int> cameFrom = new Dictionary<Vector2Int, Vector2Int>();
@@ -22,7 +22,7 @@ public static class GridMovementPathfinder
         {
             Vector2Int current = queue.Dequeue();
 
-            if (current.y == height - 1 && gridObjects[current.x, current.y] == null)
+            if (current.y == height - 1 && gridPassengers[current.x, current.y] == null)
             {
                 List<Vector2Int> path = new List<Vector2Int>();
                 Vector2Int step = current;
@@ -43,7 +43,7 @@ public static class GridMovementPathfinder
 
                 if (lockedGrids.Contains(neighbor)) continue;
                 if (visited.Contains(neighbor)) continue;
-                if (gridObjects[neighbor.x, neighbor.y] != null) continue;
+                if (gridPassengers[neighbor.x, neighbor.y] != null) continue;
 
                 visited.Add(neighbor);
                 cameFrom[neighbor] = current;

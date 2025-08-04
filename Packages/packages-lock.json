@@ -58,7 +58,7 @@
     },
     "com.unity.render-pipelines.core": {
       "version": "14.0.10",
-      "depth": 1,
+      "depth": 0,
       "source": "builtin",
       "dependencies": {
         "com.unity.ugui": "1.0.0",

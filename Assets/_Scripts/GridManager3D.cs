@@ -14,17 +14,17 @@ public class GridManager3D : MonoBehaviour
     public Passenger passengerPrefab;
     public GameObject gridTilePrefab;
 
-    private GameObject[,] gridObjects;
+    private Passenger[,] gridPassengers;
     private HashSet<Vector2Int> lockedGrids = new();
 
     public void GenerateGrid(int width1, int height1, List<Vector2Int> locked = null)
     {
         width = width1;
         height = height1;
-        gridObjects = new GameObject[width, height];
+        gridPassengers = new Passenger[width, height];
 
         HashSet<Vector2Int> lockedSet = locked != null ? new HashSet<Vector2Int>(locked) : new();
-
+        
         
         for (int x = 0; x < width; x++)
         {
@@ -38,57 +38,31 @@ public class GridManager3D : MonoBehaviour
                 Instantiate(gridTilePrefab, tilePos, Quaternion.identity, transform).name = $"Tile_{x}_{z}";
             }
         }
-        this.lockedGrids = lockedSet;
+        lockedGrids = lockedSet;
     }
 
     public void TrySendToTop(int startX, int startZ)
     {
-        //GridMovementPathfinder.GetPathToTop();
-        GameObject obj = gridObjects[startX, startZ];
-        if (obj == null) return;
-
+        Passenger passenger = gridPassengers[startX, startZ];
+        if (passenger == null) return;
+        
         Vector2Int start = new Vector2Int(startX, startZ);
-
-        List<Vector2Int> path = GridMovementPathfinder.GetPathToTop(
-            start, gridObjects, width, height, lockedGrids
-        );
-
+        List<Vector2Int> path = GridMovementPathfinder.GetPathToTop(start, gridPassengers, width, height, lockedGrids);
+        
         if (path != null)
-        {
-            StartCoroutine(MoveAlongPath(obj, startX, startZ, path));
-        }
+            MoveAlongPath(passenger, startX, startZ, path);
+        
     }
 
-    IEnumerator MoveAlongPath(GameObject obj, int startX, int startZ, List<Vector2Int> path)
+    private void MoveAlongPath(Passenger passenger, int startX, int startZ, List<Vector2Int> path)
     {
-        gridObjects[startX, startZ] = null;
-
-        // World pozisyon listesini hazırla
-        Vector3[] worldPath = new Vector3[path.Count];
-        for (int i = 0; i < path.Count; i++)
+        gridPassengers[startX, startZ] = null;
+        
+        var passengerMovementController = passenger.GetComponent<PassengerMovementController>();
+        passengerMovementController.MoveAlongGridPath(path, this, () =>
         {
-            Vector3 pos = GetWorldPos(path[i].x, path[i].y);
-            worldPath[i] = pos;
-        }
-
-        // Son pozisyona grid'de kaydet
-        Vector2Int last = path[^1];
-        //gridObjects[last.x, last.y] = obj;
-
-        // Hareket başlasın
-        yield return StartCoroutine(obj.GetComponent<IMovable>().FollowPath(worldPath, () =>
-        {
-            PassengerRouter(obj.GetComponent<Passenger>()); 
-        }));
-    }
-    
-    private void PassengerRouter(Passenger passenger)
-    {
-        if (BusManager.Instance.TryReceive(passenger)) return;
-        if (WaitingAreaManager.Instance.TryReceive(passenger)) return;
-
-        // ikisi de alamadı: game over
-        Debug.Log("Game Over!");
+            PassengerFlowController.Instance.RoutePassenger(passenger);
+        });
     }
 
     public void SpawnPassenger(Vector2Int gridPosition,ObjColor passengerColor)
@@ -103,7 +77,7 @@ public class GridManager3D : MonoBehaviour
         click.Init(gridPosition.x, gridPosition.y, this);
 
         
-        gridObjects[gridPosition.x, gridPosition.y] = passenger.gameObject;
+        gridPassengers[gridPosition.x, gridPosition.y] = passenger;
         passenger.ColorSetup(passengerColor);
     }
 
@@ -118,17 +92,6 @@ public class GridManager3D : MonoBehaviour
        float offsetX = -(width - 1) * step / 2f;
 
        return new Vector3(x * step + offsetX, 0f, z * step + offsetZ);
-       
     }
-    
-    private bool IsValidGridPos(Vector2Int pos)
-    {
-        if (pos.x < 0 || pos.x >= width || pos.y < 0 || pos.y >= height)
-            return false;
 
-        if (lockedGrids != null && lockedGrids.Contains(pos))
-            return false;
-
-        return true;
-    }
 }
