@@ -78,6 +78,10 @@ public class BusManager : Singleton<BusManager>,IPassengerReceiver
     {
         if (currentBus.IsBusFull)
             StartCoroutine(HandleBusDeparture());
+        
     }
+    
+    
+   
     
 }

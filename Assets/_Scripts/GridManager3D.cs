@@ -43,57 +43,19 @@ public class GridManager3D : MonoBehaviour
 
     public void TrySendToTop(int startX, int startZ)
     {
+        //GridMovementPathfinder.GetPathToTop();
         GameObject obj = gridObjects[startX, startZ];
         if (obj == null) return;
 
-        Queue<Vector2Int> queue = new Queue<Vector2Int>();
-        Dictionary<Vector2Int, Vector2Int> cameFrom = new Dictionary<Vector2Int, Vector2Int>();
-        HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
-
         Vector2Int start = new Vector2Int(startX, startZ);
-        queue.Enqueue(start);
-        visited.Add(start);
 
-        Vector2Int[] directions = {
-            Vector2Int.up, Vector2Int.down,
-            Vector2Int.left, Vector2Int.right
-        };
+        List<Vector2Int> path = GridMovementPathfinder.GetPathToTop(
+            start, gridObjects, width, height, lockedGrids
+        );
 
-        while (queue.Count > 0)
+        if (path != null)
         {
-            Vector2Int current = queue.Dequeue();
-
-            // En üst satırda boş bir yer varsa hedefimiz budur
-            if (current.y == height - 1 && gridObjects[current.x, current.y] == null)
-            {
-                // Yolu çöz
-                List<Vector2Int> path = new List<Vector2Int>();
-                Vector2Int step = current;
-                while (step != start)
-                {
-                    path.Add(step);
-                    step = cameFrom[step];
-                }
-                path.Reverse();
-
-                StartCoroutine(MoveAlongPath(obj, startX, startZ, path));
-                return;
-            }
-
-            foreach (var dir in directions)
-            {
-                Vector2Int neighbor = current + dir;
-                if (neighbor.x < 0 || neighbor.x >= width || neighbor.y < 0 || neighbor.y >= height)
-                    continue;
-
-                if (!IsValidGridPos(neighbor)) continue;
-                if (visited.Contains(neighbor)) continue;
-                if (gridObjects[neighbor.x, neighbor.y] != null) continue;
-
-                visited.Add(neighbor);
-                cameFrom[neighbor] = current;
-                queue.Enqueue(neighbor);
-            }
+            StartCoroutine(MoveAlongPath(obj, startX, startZ, path));
         }
     }
 

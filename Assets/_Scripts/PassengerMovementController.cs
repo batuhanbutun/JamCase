@@ -21,7 +21,7 @@ public class PassengerMovementController : MonoBehaviour,IMovable
         LookAtSmooth(targetPos);
 
         yield return transform.DOMove(targetPos, movementSpeed)
-            .SetEase(Ease.InOutSine)
+            .SetEase(Ease.Linear)
             .SetSpeedBased(true)
             .WaitForCompletion();
 
@@ -34,7 +34,7 @@ public class PassengerMovementController : MonoBehaviour,IMovable
         passenger.SetAnimator("running",true);
 
         yield return transform.DOPath(worldPath, movementSpeed, PathType.Linear)
-            .SetEase(Ease.InOutSine)
+            .SetEase(Ease.Linear)
             .SetLookAt(0.01f) // Dönüş için, ama gerekirse yorum satırına al
             .SetSpeedBased(true)
             .WaitForCompletion();
