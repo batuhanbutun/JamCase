@@ -59,13 +59,13 @@ public class BusManager : Singleton<BusManager>,IPassengerReceiver
         busDeparting = true;
         yield return new WaitForSeconds(0.5f);
         var toMovingBus = currentBus;
-        yield return toMovingBus.MoveTo(currentBus.transform.position + Vector3.right * 10f,() => Destroy(toMovingBus.gameObject));
+        yield return toMovingBus.Move(currentBus.transform.position + Vector3.right * 10f,() => Destroy(toMovingBus.gameObject));
         
         currentBus = null;
         
         if (backBus != null)
         {
-            yield return backBus.MoveTo(frontSlot.position, () =>
+            yield return backBus.Move(frontSlot.position, () =>
             {
                 currentBus = backBus;
                 backBus = null;

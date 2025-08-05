@@ -15,9 +15,16 @@ public class Passenger : MonoBehaviour,IColorable
 
     private IOutlinable outlinable;
 
+    private PassengerStateMachine stateMachine;
     private void Awake()
     {
         outlinable = GetComponent<IOutlinable>();
+        stateMachine = GetComponent<PassengerStateMachine>();
+    }
+
+    private void Start()
+    {
+        stateMachine.Initialize(new WaitingOnGridState(this));
     }
 
     public void ColorSetup(ObjColor color)

@@ -13,8 +13,34 @@ public class PassengerMovementController : MonoBehaviour,IMovable
     {
         passenger = GetComponent<Passenger>();
     }
+
     
-    public IEnumerator MoveTo(Vector3 targetPos, Action onComplete = null)
+    public bool TryToSendTop(int x, int z)
+    {
+        Vector2Int start = new Vector2Int(x, z);
+        List<Vector2Int> path = GridMovementPathfinder.GetPathToTop(start);
+        if (path == null) return false;
+        
+        var busAvailable = BusManager.Instance.IsCurrentBusAvailable(passenger);
+        var waitingAreaAvailable = WaitingAreaManager.Instance.IsAvailable();
+        if(!waitingAreaAvailable && !busAvailable) return false;
+        
+        GridMovementPathfinder.EvaluatePassengerPaths();
+        GridManager3D.Instance.gridPassengers[x, z] = null;
+        GetComponent<IOutlinable>().OutlineSet(false);
+            
+        Vector3[] worldPath = GridMovementPathfinder.GetPathWorldPoints(path);
+            
+        StartCoroutine(Move(worldPath, Route));
+        return true;
+    }
+
+    private void Route()
+    {
+        PassengerFlowController.Instance.RoutePassenger(passenger);
+    }
+
+    public IEnumerator Move(Vector3 targetPos,Action onComplete = null)
     {
         passenger.SetAnimator("running",true);
         LookAtSmooth(targetPos);
@@ -29,7 +55,7 @@ public class PassengerMovementController : MonoBehaviour,IMovable
             onComplete?.Invoke();
     }
     
-    public IEnumerator FollowPath(Vector3[] worldPath, Action onComplete = null)
+    public IEnumerator Move(Vector3[] worldPath,Action onComplete = null)
     {
         if (worldPath == null || worldPath.Length < 2)
         {
@@ -46,7 +72,7 @@ public class PassengerMovementController : MonoBehaviour,IMovable
 
         passenger.SetAnimator("running",false);
         if (GameManager.Instance.gameState == GameState.PLAY)
-            onComplete?.Invoke();
+            onComplete?.Invoke(); 
     }
     
     private void LookAtSmooth(Vector3 targetPos)

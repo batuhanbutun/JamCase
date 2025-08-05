@@ -5,7 +5,6 @@ using UnityEngine;
 
 public interface IMovable
 {
-    IEnumerator MoveTo(Vector3 targetPos, Action onComplete = null);
+    IEnumerator Move(Vector3 targetPos, Action onComplete = null);
     
-    IEnumerator FollowPath(Vector3[] worldPath, Action onComplete = null);
 }

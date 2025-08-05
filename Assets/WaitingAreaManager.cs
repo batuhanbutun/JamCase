@@ -29,7 +29,7 @@ public class WaitingAreaManager : Singleton<WaitingAreaManager>, IPassengerRecei
             if (waitingPassengers[i] == null)
             {
                 waitingPassengers[i] = passenger;
-                passengerMoveCoroutine = StartCoroutine(passenger.GetComponent<IMovable>().MoveTo(waitingAreaGrids[i].position,
+                passengerMoveCoroutine = StartCoroutine(passenger.GetComponent<IMovable>().Move(waitingAreaGrids[i].position,
                     () =>
                     {
                         waitingPassengerCount++;
