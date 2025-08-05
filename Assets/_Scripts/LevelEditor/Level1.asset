@@ -12,19 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6191d7616fe292d40935a9ec5ddbc4fe, type: 3}
   m_Name: Level1
   m_EditorClassIdentifier: 
-  gridWidth: 5
-  gridHeight: 5
+  levelDuration: 30
+  gridWidth: 3
+  gridHeight: 3
   passengerList:
-  - gridPosition: {x: 3, y: 0}
-    color: 1
-  - gridPosition: {x: 0, y: 3}
-    color: 0
-  - gridPosition: {x: 1, y: 1}
-    color: 1
-  - gridPosition: {x: 2, y: 2}
-    color: 0
   - gridPosition: {x: 0, y: 0}
     color: 1
-  - gridPosition: {x: 2, y: 3}
-    color: 0
-  busColorSequence: 000000000000000000000000
+  - gridPosition: {x: 2, y: 0}
+    color: 4
+  - gridPosition: {x: 2, y: 2}
+    color: 2
+  - gridPosition: {x: 0, y: 2}
+    color: 2
+  - gridPosition: {x: 1, y: 1}
+    color: 2
+  - gridPosition: {x: 1, y: 0}
+    color: 4
+  - gridPosition: {x: 2, y: 1}
+    color: 4
+  - gridPosition: {x: 0, y: 1}
+    color: 1
+  busColorSequence: 010000000200000004000000
+  lockedGridPositions: []

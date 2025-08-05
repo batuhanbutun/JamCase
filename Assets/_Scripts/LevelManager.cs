@@ -1,18 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : Singleton<LevelManager>
 {
     [SerializeField] private List<LevelData> levelDatas;
-    [SerializeField] private GridManager3D gridManager;
-    private LevelData currentLevelData;
+    public LevelData currentLevelData;
     private int currentLevelIndex;
     private void Awake()
     {
         if(!PlayerPrefs.HasKey("LevelIndex"))
             PlayerPrefs.SetInt("LevelIndex", 0);
-        
     }
     
     private void Start()
@@ -35,6 +34,7 @@ public class LevelManager : Singleton<LevelManager>
             return;
         }
 
+        var gridManager = GridManager3D.Instance;
         gridManager.GenerateGrid(currentLevelData.gridWidth, currentLevelData.gridHeight,currentLevelData.lockedGridPositions);
 
         foreach (var data in currentLevelData.passengerList)
@@ -43,5 +43,16 @@ public class LevelManager : Singleton<LevelManager>
         }
 
         BusManager.Instance.SpawnInitialBuses(currentLevelData.busColorSequence);
+    }
+
+    public void NextLevel()
+    {
+        PlayerPrefs.SetInt("LevelIndex", currentLevelIndex + 1);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

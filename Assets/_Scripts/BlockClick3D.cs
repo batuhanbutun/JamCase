@@ -16,6 +16,7 @@ public class BlockClick3D : MonoBehaviour
 
     private void OnMouseDown()
     {
+        Debug.Log($"Clicked {x}, {z}");
         grid.TrySendToTop(x, z);
     }
 }

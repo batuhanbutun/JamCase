@@ -56,6 +56,7 @@ public class GridManager3D : Singleton<GridManager3D>
     public void TrySendToTop(int startX, int startZ)
     {
         Passenger passenger = gridPassengers[startX, startZ];
+        
         if (passenger == null) return;
         
         Vector2Int start = new Vector2Int(startX, startZ);
@@ -132,7 +133,7 @@ public class GridManager3D : Singleton<GridManager3D>
                     lockedGrids
                 );
 
-                bool hasPath = path != null && path.Count > 0;
+                bool hasPath = path != null;
                 callback?.Invoke(p, hasPath);
             }
         }

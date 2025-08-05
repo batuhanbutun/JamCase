@@ -6,6 +6,12 @@ public static class GridMovementPathfinder
 {
     public static List<Vector2Int> GetPathToTop(Vector2Int start, Passenger[,] gridPassengers, int width, int height, HashSet<Vector2Int> lockedGrids)
     {
+        
+        if (start.y == height - 1)
+        {
+            return new List<Vector2Int>(); 
+        }
+        
         Queue<Vector2Int> queue = new Queue<Vector2Int>();
         Dictionary<Vector2Int, Vector2Int> cameFrom = new Dictionary<Vector2Int, Vector2Int>();
         HashSet<Vector2Int> visited = new HashSet<Vector2Int>();

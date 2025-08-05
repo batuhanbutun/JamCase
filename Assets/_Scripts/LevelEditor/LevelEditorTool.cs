@@ -9,11 +9,10 @@ public class LevelEditorTool : MonoBehaviour
     [SerializeField] private LayerMask gridLayer;
     [SerializeField] private int gridWidth = 6;
     [SerializeField] private int gridHeight = 8;
-    [SerializeField] private float gridSpacing = 1f;
     [SerializeField] private GameObject gridPrefab;
     [SerializeField] private Transform gridParent;
-    [SerializeField] private Material lockedMaterial;
     private HashSet<Vector2Int> lockedGrids = new();
+    private readonly float gridSpacing = 0.5f;
     
     [Header("Passenger Settings")]
     [SerializeField] private ObjColor selectedColor;
@@ -22,6 +21,9 @@ public class LevelEditorTool : MonoBehaviour
     [Header("Bus Sequence")]
     [SerializeField] private List<ObjColor> busColorSequence = new();
 
+    [Header("Level Duration")]
+    [SerializeField] private float levelDuration = 30f;
+    
     [Header("Save Target")]
     [SerializeField] private LevelData saveTarget;
 
@@ -105,7 +107,7 @@ public class LevelEditorTool : MonoBehaviour
             if (i.Value.obj != null)
                 DestroyImmediate(i.Value.obj);
         }
-
+        lockedGrids.Clear();
         spawnedPassengers.Clear();
 
         Debug.Log("Grid ve üstündekiler temizlendi");
@@ -194,6 +196,7 @@ public class LevelEditorTool : MonoBehaviour
         saveTarget.passengerList.Clear();
         saveTarget.busColorSequence = new(busColorSequence);
         saveTarget.lockedGridPositions = new List<Vector2Int>(lockedGrids);
+        saveTarget.levelDuration = this.levelDuration;
         
         foreach (var kvp in spawnedPassengers)
         {
@@ -222,7 +225,7 @@ public class LevelEditorTool : MonoBehaviour
 
         foreach (var locked in lockedGrids)
         {
-            gridVisuals[locked.x, locked.y].GetComponent<Renderer>().material = lockedMaterial;
+            gridVisuals[locked.x, locked.y].GetComponent<Renderer>().material.color = Color.black;
         }
         foreach (var data in saveTarget.passengerList)
         {

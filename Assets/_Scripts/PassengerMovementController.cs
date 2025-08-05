@@ -32,6 +32,11 @@ public class PassengerMovementController : MonoBehaviour,IMovable
     
     public IEnumerator FollowPath(Vector3[] worldPath, Action onComplete = null)
     {
+        if (worldPath == null || worldPath.Length < 2)
+        {
+            onComplete?.Invoke();
+            yield break;
+        }
         passenger.SetAnimator("running",true);
 
         yield return transform.DOPath(worldPath, movementSpeed, PathType.Linear)

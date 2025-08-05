@@ -12,80 +12,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6191d7616fe292d40935a9ec5ddbc4fe, type: 3}
   m_Name: Level3
   m_EditorClassIdentifier: 
-  gridWidth: 7
-  gridHeight: 7
+  levelDuration: 75
+  gridWidth: 5
+  gridHeight: 5
   passengerList:
-  - gridPosition: {x: 4, y: 5}
-    color: 1
-  - gridPosition: {x: 5, y: 4}
-    color: 4
-  - gridPosition: {x: 6, y: 4}
-    color: 3
-  - gridPosition: {x: 1, y: 4}
-    color: 5
-  - gridPosition: {x: 0, y: 4}
+  - gridPosition: {x: 2, y: 4}
     color: 0
-  - gridPosition: {x: 3, y: 2}
+  - gridPosition: {x: 1, y: 1}
+    color: 0
+  - gridPosition: {x: 3, y: 1}
+    color: 0
+  - gridPosition: {x: 4, y: 4}
     color: 1
-  - gridPosition: {x: 4, y: 2}
+  - gridPosition: {x: 0, y: 4}
     color: 1
-  - gridPosition: {x: 2, y: 2}
-    color: 4
-  - gridPosition: {x: 1, y: 2}
-    color: 4
-  - gridPosition: {x: 5, y: 2}
-    color: 5
-  - gridPosition: {x: 0, y: 2}
-    color: 5
-  - gridPosition: {x: 6, y: 2}
+  - gridPosition: {x: 0, y: 3}
+    color: 1
+  - gridPosition: {x: 3, y: 3}
+    color: 2
+  - gridPosition: {x: 1, y: 4}
     color: 2
   - gridPosition: {x: 1, y: 3}
     color: 2
-  - gridPosition: {x: 0, y: 5}
-    color: 2
-  - gridPosition: {x: 0, y: 3}
-    color: 0
-  - gridPosition: {x: 5, y: 3}
-    color: 0
-  - gridPosition: {x: 6, y: 3}
-    color: 4
-  - gridPosition: {x: 3, y: 0}
-    color: 4
-  - gridPosition: {x: 4, y: 0}
-    color: 4
-  - gridPosition: {x: 1, y: 0}
-    color: 3
-  - gridPosition: {x: 0, y: 0}
-    color: 3
-  - gridPosition: {x: 0, y: 1}
-    color: 0
-  - gridPosition: {x: 2, y: 0}
-    color: 0
-  - gridPosition: {x: 6, y: 1}
-    color: 0
-  - gridPosition: {x: 1, y: 1}
-    color: 1
-  - gridPosition: {x: 5, y: 0}
-    color: 1
-  - gridPosition: {x: 6, y: 5}
-    color: 1
-  - gridPosition: {x: 5, y: 1}
-    color: 4
-  - gridPosition: {x: 6, y: 0}
-    color: 4
-  - gridPosition: {x: 2, y: 5}
+  - gridPosition: {x: 4, y: 2}
     color: 4
   - gridPosition: {x: 4, y: 1}
-    color: 3
-  - gridPosition: {x: 3, y: 1}
-    color: 3
-  - gridPosition: {x: 2, y: 1}
-    color: 3
-  busColorSequence: 01000000000000000400000001000000030000000500000000000000030000000400000004000000
+    color: 4
+  - gridPosition: {x: 0, y: 0}
+    color: 4
+  - gridPosition: {x: 2, y: 3}
+    color: 5
+  - gridPosition: {x: 0, y: 2}
+    color: 5
+  - gridPosition: {x: 0, y: 1}
+    color: 5
+  - gridPosition: {x: 3, y: 0}
+    color: 1
+  - gridPosition: {x: 1, y: 0}
+    color: 1
+  - gridPosition: {x: 3, y: 4}
+    color: 1
+  - gridPosition: {x: 2, y: 0}
+    color: 2
+  - gridPosition: {x: 4, y: 0}
+    color: 2
+  - gridPosition: {x: 4, y: 3}
+    color: 2
+  busColorSequence: 02000000050000000100000000000000040000000100000002000000
   lockedGridPositions:
-  - {x: 2, y: 4}
-  - {x: 2, y: 3}
-  - {x: 3, y: 3}
-  - {x: 4, y: 3}
-  - {x: 4, y: 4}
-  - {x: 3, y: 4}
+  - {x: 2, y: 2}
+  - {x: 1, y: 2}
+  - {x: 3, y: 2}
+  - {x: 2, y: 1}

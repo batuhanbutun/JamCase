@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Level/LevelData")]
 public class LevelData : ScriptableObject
 {
+    public float levelDuration;
     public int gridWidth;
     public int gridHeight;
 

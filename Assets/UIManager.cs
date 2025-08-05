@@ -6,17 +6,13 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] private Button playButton;
-    [SerializeField] private GameObject menuPanel,victoryPanel,losePanel;
+    [SerializeField] private Button playButton,levelCompleteButton,levelRestartButton;
+    [SerializeField] private GameObject menuPanel,gamePanel,victoryPanel,losePanel;
     
 
     private void Start()
     {
-        playButton.onClick.AddListener(() =>
-        {
-            GameManager.Instance.StartGame();
-            menuPanel.SetActive(false);
-        });
+        ButtonsInit();
 
         GameManager.Instance.OnGameSuccess += () =>
         {
@@ -27,6 +23,20 @@ public class UIManager : MonoBehaviour
         {
             losePanel.SetActive(true);
         };
+    }
+
+    private void ButtonsInit()
+    {
+        //Inspectorden atamayıp bağlılığı bir nebze azaltmak istedim. Daha büyük çaplı projelerde direkt dependency injection tercih edilebilir bağlılıklarda tabii.
+        playButton.onClick.AddListener(() =>
+        {
+            GameManager.Instance.StartGame();
+            menuPanel.SetActive(false);
+            gamePanel.SetActive(true);
+        });
+        levelCompleteButton.onClick.AddListener(() => { LevelManager.Instance.NextLevel(); });
+        levelRestartButton.onClick.AddListener(() => { LevelManager.Instance.RestartLevel(); });
+        
     }
 
 }

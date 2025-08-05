@@ -306,14 +306,15 @@ MonoBehaviour:
     m_Bits: 64
   gridWidth: 5
   gridHeight: 5
-  gridSpacing: 0.5
   gridPrefab: {fileID: 7917549305869352942, guid: 6413e4a056f304148a6b7d24f6d4ae38,
     type: 3}
   gridParent: {fileID: 878047027}
-  selectedColor: 2
+  lockedMaterial: {fileID: 0}
+  selectedColor: 0
   passengerVisualPrefab: {fileID: 8855790336608403936, guid: b9038409dc9184746b1e153d56d58762,
     type: 3}
   busColorSequence: 000000000000000000000000
+  levelDuration: 0
   saveTarget: {fileID: 11400000, guid: ecbe47cf48ecc5841bdbfa584ed04614, type: 2}
 --- !u!4 &1805112716
 Transform:
