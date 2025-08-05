@@ -11,8 +11,7 @@ public class PassengerFlowController : Singleton<PassengerFlowController>
 
         if (WaitingAreaManager.Instance.TryReceive(passenger))
             return;
-
-        Debug.Log("Game Over!");
-        // GameOverController.Instance.TriggerGameOver();
+        
+        GameManager.Instance.GameFail();
     }
 }

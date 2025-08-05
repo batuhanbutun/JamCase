@@ -9,7 +9,7 @@ public class WaitingAreaManager : Singleton<WaitingAreaManager>, IPassengerRecei
     [SerializeField] private List<Transform> waitingAreaGrids;
     private Passenger[] waitingPassengers;
     private int areaCapacity = 0;
-    
+    private int waitingPassengerCount = 0;
     private Coroutine passengerMoveCoroutine;
     private void Awake()
     {
@@ -29,7 +29,16 @@ public class WaitingAreaManager : Singleton<WaitingAreaManager>, IPassengerRecei
             if (waitingPassengers[i] == null)
             {
                 waitingPassengers[i] = passenger;
-                passengerMoveCoroutine = StartCoroutine(passenger.GetComponent<IMovable>().MoveTo(waitingAreaGrids[i].position));
+                passengerMoveCoroutine = StartCoroutine(passenger.GetComponent<IMovable>().MoveTo(waitingAreaGrids[i].position,
+                    () =>
+                    {
+                        waitingPassengerCount++;
+                        DOVirtual.DelayedCall(1f, () =>
+                        {
+                            if (IsFull() && !BusManager.Instance.busDeparting)
+                                GameManager.Instance.GameFail();
+                        });
+                    }));
                 return true;
             }
         }
@@ -51,23 +60,33 @@ public class WaitingAreaManager : Singleton<WaitingAreaManager>, IPassengerRecei
                 waitingPassengers[i] = null;
 
                 bool isBusAvailable = BusManager.Instance.TryReceive(p);
-                if (isBusAvailable)
-                    StopCoroutine(passengerMoveCoroutine);
-                
+                if (!isBusAvailable) continue;
+                StopCoroutine(passengerMoveCoroutine);
+                waitingPassengerCount--;
             }
         }
+        if (IsFull())
+            GameManager.Instance.GameFail();
     }
     
-    public void ResetArea()
+    private bool IsFull()
     {
-        for (int i = 0; i < waitingPassengers.Length; i++)
-        {
-            if (waitingPassengers[i] != null)
-            {
-                Destroy(waitingPassengers[i].gameObject);
-                waitingPassengers[i] = null;
-            }
-        }
+        if(waitingPassengerCount >= areaCapacity)
+            return true;
+        return false;
     }
+
+    public bool IsAvailable()
+    {
+        foreach (var passenger in waitingPassengers)
+        {
+            if (passenger == null)
+                return true;
+        }
+        return false;
+    }
+    
+    
+    
     
 }

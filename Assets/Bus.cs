@@ -18,6 +18,9 @@ public class Bus : MonoBehaviour,IColorable,IMovable
     public ObjColor ObjColor => busColor;
 
     public static System.Action PassengerOnBus;
+    
+    [Header("SeatSettings")]
+    [SerializeField] private List<Chair> chairs;
     public void ColorSetup(ObjColor color)
     {
         busColor = color;
@@ -31,6 +34,7 @@ public class Bus : MonoBehaviour,IColorable,IMovable
         {
             passengers.Add(passenger);
             PassengerOnBus?.Invoke();
+            chairs[passengers.Count-1].OpenSeatedPassenger(busColor);
             Destroy(passenger.gameObject);
         }));
         //Otobüs koltuğuna oturt

@@ -26,7 +26,8 @@ public class PassengerMovementController : MonoBehaviour,IMovable
             .WaitForCompletion();
 
         passenger.SetAnimator("running",false);
-        onComplete?.Invoke();
+        if (GameManager.Instance.gameState == GameState.PLAY)
+            onComplete?.Invoke();
     }
     
     public IEnumerator FollowPath(Vector3[] worldPath, Action onComplete = null)
@@ -40,7 +41,8 @@ public class PassengerMovementController : MonoBehaviour,IMovable
             .WaitForCompletion();
 
         passenger.SetAnimator("running",false);
-        onComplete?.Invoke();
+        if (GameManager.Instance.gameState == GameState.PLAY)
+            onComplete?.Invoke();
     }
     
     public void MoveAlongGridPath(List<Vector2Int> gridPath, GridManager3D gridManager, System.Action onComplete = null)
@@ -68,6 +70,7 @@ public class PassengerMovementController : MonoBehaviour,IMovable
             transform.DORotate(lookRot.eulerAngles, 0.2f).SetEase(Ease.InOutSine);
         }
     }
+    
     
     
 }

@@ -17,6 +17,8 @@ public class BusManager : Singleton<BusManager>,IPassengerReceiver
     private Bus backBus;
 
     public System.Action<Bus> BusReadyToDepart;
+    public ObjColor CurrentBusColor => currentBus.ObjColor;
+    public bool busDeparting;
     private void Awake()
     {
         Bus.PassengerOnBus = null;
@@ -47,14 +49,15 @@ public class BusManager : Singleton<BusManager>,IPassengerReceiver
         if (currentBus == null) return false;
         if (passenger.ObjColor != currentBus.ObjColor) return false;
         if (currentBus.IsBusReserved) return false;
-            
-
+        
         currentBus.SetSeatForPassenger(passenger);
         return true;
     }
     
     IEnumerator HandleBusDeparture()
     {
+        busDeparting = true;
+        yield return new WaitForSeconds(0.5f);
         var toMovingBus = currentBus;
         yield return toMovingBus.MoveTo(currentBus.transform.position + Vector3.right * 10f,() => Destroy(toMovingBus.gameObject));
         
@@ -70,8 +73,11 @@ public class BusManager : Singleton<BusManager>,IPassengerReceiver
                     backBus = SpawnBus(busColorSequence[currentIndex++], backSlot.position);
             
                 BusReadyToDepart?.Invoke(currentBus);
+                busDeparting = false;
             });
         }
+        else
+            GameManager.Instance.GameWin();
     }
 
     private void IsCurrentBusFull()
@@ -79,6 +85,13 @@ public class BusManager : Singleton<BusManager>,IPassengerReceiver
         if (currentBus.IsBusFull)
             StartCoroutine(HandleBusDeparture());
         
+    }
+
+    public bool IsCurrentBusAvailable(Passenger p)
+    {
+        if(busDeparting) return false;
+        if(p.ObjColor != currentBus.ObjColor || currentBus.IsBusReserved) return false;
+        return true;
     }
     
     

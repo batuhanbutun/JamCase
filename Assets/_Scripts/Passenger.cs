@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using _Scripts;
+using EPOOutline;
 using UnityEngine;
 
 public class Passenger : MonoBehaviour,IColorable
@@ -12,7 +13,13 @@ public class Passenger : MonoBehaviour,IColorable
     
     public ObjColor ObjColor => passengerColor;
 
-    
+    private IOutlinable outlinable;
+
+    private void Awake()
+    {
+        outlinable = GetComponent<IOutlinable>();
+    }
+
     public void ColorSetup(ObjColor color)
     { 
         passengerRenderer.material.color = ColorUtils.FromObjColor(color);
@@ -22,6 +29,16 @@ public class Passenger : MonoBehaviour,IColorable
     public void SetAnimator(string stateName,bool isOn)
     {
         passengerAnimator.SetBool(stateName, isOn);
+    }
+    
+    public void SetAnimator(string stateName)
+    {
+        passengerAnimator.SetTrigger(stateName);
+    }
+
+    public void PassengerPathControl(bool isPathClear)
+    {
+        outlinable?.OutlineSet(isPathClear);
     }
     
 }
