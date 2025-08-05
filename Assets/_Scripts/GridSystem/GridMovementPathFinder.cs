@@ -4,9 +4,13 @@ using UnityEngine;
 
 public static class GridMovementPathfinder
 {
-    public static List<Vector2Int> GetPathToTop(Vector2Int start, Passenger[,] gridPassengers, int width, int height, HashSet<Vector2Int> lockedGrids)
+    public const float GRİD_SPACİNG = 0.5f;
+    public static List<Vector2Int> GetPathToTop(Vector2Int start)
     {
-        
+        var gridPassengers = GridManager3D.Instance.gridPassengers;
+        var width = GridManager3D.Instance.width;
+        var height = GridManager3D.Instance.height;
+        var lockedGrids = GridManager3D.Instance.lockedGrids;
         if (start.y == height - 1)
         {
             return new List<Vector2Int>(); 
@@ -58,5 +62,50 @@ public static class GridMovementPathfinder
         }
 
         return null; // Ulaşılamazsa boş path döndür
+    }
+
+    public static Vector3[] GetPathWorldPoints(List<Vector2Int> gridPath)
+    {
+        Vector3[] worldPath = new Vector3[gridPath.Count];
+        for (int i = 0; i < gridPath.Count; i++)
+        {
+            Vector3 pos = GetGridWorldPos(gridPath[i].x, gridPath[i].y);
+            worldPath[i] = pos;
+        }
+
+        return worldPath;
+    }
+    
+    public static Vector3 GetGridWorldPos(int x, int z)
+    {
+        float step = GRİD_SPACİNG;
+
+        float totalHeight = (GridManager3D.Instance.height - 1) * step;
+        float topZ = 5f; // burası senin oyunundaki sabit üst sınır
+        float offsetZ = topZ - totalHeight;
+
+        float offsetX = -(GridManager3D.Instance.width - 1) * step / 2f;
+
+        return new Vector3(x * step + offsetX, 0f, z * step + offsetZ);
+    }
+    
+    public static void EvaluatePassengerPaths()
+    {
+        if (GridManager3D.Instance.gridPassengers == null) return;
+        for (int x = 0; x < GridManager3D.Instance.width; x++)
+        {
+            for (int z = 0; z < GridManager3D.Instance.height; z++)
+            {
+                Passenger p = GridManager3D.Instance.gridPassengers[x, z];
+                if (p == null) continue;
+
+                Vector2Int start = new(x, z);
+
+                List<Vector2Int> path = GetPathToTop(start);
+
+                bool hasPath = path != null;
+                p.PassengerPathControl(hasPath);
+            }
+        }
     }
 }

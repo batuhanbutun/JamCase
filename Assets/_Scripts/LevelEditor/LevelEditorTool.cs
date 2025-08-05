@@ -12,8 +12,8 @@ public class LevelEditorTool : MonoBehaviour
     [SerializeField] private GameObject gridPrefab;
     [SerializeField] private Transform gridParent;
     private HashSet<Vector2Int> lockedGrids = new();
-    private readonly float gridSpacing = 0.5f;
-    
+   
+
     [Header("Passenger Settings")]
     [SerializeField] private ObjColor selectedColor;
     [SerializeField] private GameObject passengerVisualPrefab;
@@ -65,8 +65,8 @@ public class LevelEditorTool : MonoBehaviour
 
         gridVisuals = new GameObject[gridWidth, gridHeight];
 
-        float totalWidth = (gridWidth - 1) * gridSpacing;
-        float totalHeight = (gridHeight - 1) * gridSpacing;
+        float totalWidth = (gridWidth - 1) * GridMovementPathfinder.GRİD_SPACİNG;
+        float totalHeight = (gridHeight - 1) * GridMovementPathfinder.GRİD_SPACİNG;
 
         float offsetX = -totalWidth / 2f;
         float offsetZ = 5f - totalHeight; // z = 5 sabit üst hizaya göre
@@ -76,9 +76,9 @@ public class LevelEditorTool : MonoBehaviour
             for (int y = 0; y < gridHeight; y++)
             {
                 Vector3 pos = new Vector3(
-                    x * gridSpacing + offsetX,
+                    x * GridMovementPathfinder.GRİD_SPACİNG + offsetX,
                     0,
-                    y * gridSpacing + offsetZ
+                    y * GridMovementPathfinder.GRİD_SPACİNG + offsetZ
                 );
 
                 var obj = Instantiate(gridPrefab, pos, Quaternion.identity, gridParent);
@@ -134,16 +134,16 @@ public class LevelEditorTool : MonoBehaviour
             spawnedPassengers.Remove(gridPos);
         }
         
-        float totalWidth = (gridWidth - 1) * gridSpacing;
-        float totalHeight = (gridHeight - 1) * gridSpacing;
+        float totalWidth = (gridWidth - 1) * GridMovementPathfinder.GRİD_SPACİNG;
+        float totalHeight = (gridHeight - 1) * GridMovementPathfinder.GRİD_SPACİNG;
 
         float offsetX = -totalWidth / 2f;
         float offsetZ = 5f - totalHeight;
 
         Vector3 pos = new Vector3(
-            gridPos.x * gridSpacing + offsetX,
+            gridPos.x * GridMovementPathfinder.GRİD_SPACİNG + offsetX,
             0f,
-            gridPos.y * gridSpacing + offsetZ
+            gridPos.y * GridMovementPathfinder.GRİD_SPACİNG + offsetZ
         );
 
         var vis = Instantiate(passengerVisualPrefab, pos, Quaternion.identity);
@@ -237,14 +237,14 @@ public class LevelEditorTool : MonoBehaviour
 
     private Vector2Int WorldToGridIndex(Vector3 worldPos)
     {
-        float totalWidth = (gridWidth - 1) * gridSpacing;
-        float totalHeight = (gridHeight - 1) * gridSpacing;
+        float totalWidth = (gridWidth - 1) * GridMovementPathfinder.GRİD_SPACİNG;
+        float totalHeight = (gridHeight - 1) * GridMovementPathfinder.GRİD_SPACİNG;
 
         float offsetX = -totalWidth / 2f;
         float offsetZ = 5f - totalHeight;
 
-        int x = Mathf.RoundToInt((worldPos.x - offsetX) / gridSpacing);
-        int y = Mathf.RoundToInt((worldPos.z - offsetZ) / gridSpacing);
+        int x = Mathf.RoundToInt((worldPos.x - offsetX) / GridMovementPathfinder.GRİD_SPACİNG);
+        int y = Mathf.RoundToInt((worldPos.z - offsetZ) / GridMovementPathfinder.GRİD_SPACİNG);
 
         return new Vector2Int(x, y);
     }
