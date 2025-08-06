@@ -1,0 +1,1 @@
+Projenin visual kısımlarına malesef fazla polish geçilemedi. Mekanikler ve level editor yapıldı. Bir adet bomb passenger türü yaptım. Ayrıca ileride farklı passenger türleri eklersek altyapısını esnek şekilde hazırladım.
