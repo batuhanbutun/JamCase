@@ -25,14 +25,12 @@ public abstract class PassengerGridEventHandlerBase : MonoBehaviour
 
     private void OnPassengerSent(Passenger sent, Vector2Int fromGridPos)
     {
-        // Kendi grid’imden gönderildiğinde
         if (sent == passenger)
         {
             HandleOwnGridSent(fromGridPos);
             return;
         }
 
-        // Başka grid’den gönderildi, önce neighbor mı kontrol et
         var myPos = passenger.gridPos;
         bool isNeighbor = 
             (Mathf.Abs(fromGridPos.x - myPos.x) == 1 && fromGridPos.y == myPos.y) ||
@@ -50,15 +48,12 @@ public abstract class PassengerGridEventHandlerBase : MonoBehaviour
             HandleOwnExit();
     }
 
-    /// <summary>Herhangi bir grid’den gönderilen passenger olduğunda.</summary>
     protected virtual void HandleAnyGridSent(Passenger sent, Vector2Int fromGridPos) { }
 
-    /// <summary>Komşu grid’den gönderilen passenger olduğunda.</summary>
     protected virtual void HandleNeighborGridSent(Passenger sent, Vector2Int fromGridPos) { }
 
-    /// <summary>Kendi grid’imden gönderildiğimde.</summary>
     protected virtual void HandleOwnGridSent(Vector2Int fromGridPos) { }
 
-    /// <summary>Kendi grid’imden çıkış tamamlandığında (ister hareket ister başka exit).</summary>
+
     protected virtual void HandleOwnExit() { }
 }
