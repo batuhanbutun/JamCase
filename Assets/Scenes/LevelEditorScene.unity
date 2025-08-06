@@ -309,10 +309,15 @@ MonoBehaviour:
   gridPrefab: {fileID: 7917549305869352942, guid: 6413e4a056f304148a6b7d24f6d4ae38,
     type: 3}
   gridParent: {fileID: 878047027}
-  lockedMaterial: {fileID: 0}
+  selectedPassengerType: 0
   selectedColor: 0
-  passengerVisualPrefab: {fileID: 8855790336608403936, guid: b9038409dc9184746b1e153d56d58762,
-    type: 3}
+  passengerTypeAndEnums:
+  - passengerType: 0
+    passengerPrefab: {fileID: 4398573873070594592, guid: b5b899bf72b82f148aa1287319ed6f77,
+      type: 3}
+  - passengerType: 1
+    passengerPrefab: {fileID: 5239129486412709011, guid: 0b8350a7e63258845a5dcce9a5180a9a,
+      type: 3}
   busColorSequence: 000000000000000000000000
   levelDuration: 0
   saveTarget: {fileID: 11400000, guid: ecbe47cf48ecc5841bdbfa584ed04614, type: 2}
@@ -417,13 +422,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1963329989}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.3898358, y: -0, z: -0, w: 0.92088443}
-  m_LocalPosition: {x: 0.01, y: 5.96, z: -0.16}
+  m_LocalRotation: {x: 0.4981684, y: -0, z: -0, w: 0.8670803}
+  m_LocalPosition: {x: 0.01, y: 7.63, z: 1.16}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 45.889, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 59.758, y: 0, z: 0}
 --- !u!114 &1963329993
 MonoBehaviour:
   m_ObjectHideFlags: 0
